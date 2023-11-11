@@ -1,39 +1,31 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import User from "../models/User.js";
+import Customer from "../models/Customer.js";
 
-/* REGISTER USER */
-export const regiser = async(req, res)=>{
+/* REGISTER CUSTOMER */
+export const register = async(req, res)=>{
     try {
         const{
             firstName,
             lastName,
             email,
             password,
-            picturePath,
-            friends,
-            location,
-            occupation
+            picturePath
         } = req.body;
 
         const salt = await bcrypt.genSalt();
         const passwordHash = await bcrypt.hash(password, salt);
 
-        const newUser = new User({
+        const newCustomer = new Customer({
             firstName,
             lastName,
             email,
             password: passwordHash,
-            picturePath,
-            friends,
-            location,
-            occupation,
-            viewedProfile: Math.floor(Math.random()*10000),
-            impressions: Math.floor(Math.random()*10000)
+            picturePath
         })
-        const savedUser = await newUser.save();
-        res.status(201).json(savedUser);
+        const savedCustomer = await newCustomer.save();
+        res.status(201).json(savedCustomer);
     } catch (error) {
-        
+        res.status(500).json({error: error.message});
     }
 }
