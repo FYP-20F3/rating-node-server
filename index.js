@@ -44,6 +44,7 @@ app.use("/auth", authRoutes);
 app.use("/customers", customerRoutes)
 
 
+
 /* MONGOOSE SETUP */
 const PORT = process.env.PORT || 6000
 mongoose.connect(process.env.MONGO_URL).then(()=>{
