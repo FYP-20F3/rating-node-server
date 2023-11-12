@@ -1,4 +1,4 @@
-import Customer from "../models/Customer";
+import Customer from "../models/Customer.js";
 
 /* READ */
 export const getCustomer = async (req, res)=>{
