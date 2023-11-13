@@ -3,11 +3,11 @@ import Review from "../models/Review.js";
 /* CREATE */
 export const createReview = async (req, res)=>{
     try {
-        const { customerId, businessId, reviewSource, reviewRating, reviewType, reviewTitle, reviewDescription, dateOfExperience, reviewClassificationId } = req.body;
+        const { businessId, reviewSource, reviewRating, reviewType, reviewTitle, reviewDescription, dateOfExperience, reviewClassificationId } = req.body;
 
         // const customer = await Customer.findById(customerId);
         const newReview = new Review({
-            customerId, 
+            customerId: req.customer.id, 
             businessId, 
             reviewSource, 
             reviewRating, 

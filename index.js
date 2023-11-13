@@ -41,7 +41,7 @@ const upload = multer({storage});
 
 /* ROUTES WITH FILES */
 app.post("/auth/register", upload.single("picture"), register);
-app.post("/reviews", createReview);
+app.post("/reviews",verifyToken, createReview);
 
 /* ROUTES */
 app.use("/auth", authRoutes);

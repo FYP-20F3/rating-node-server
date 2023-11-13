@@ -5,7 +5,7 @@ import { verifyToken } from "../middleware/auth.js";
 const router = express.Router();
 
 /* READ */
-router.get("/:customerId/reviews",verifyToken , getCustomerReviews)
+router.get("/:customerId/reviews", verifyToken , getCustomerReviews)
 
 
 export default router;
