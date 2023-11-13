@@ -11,7 +11,7 @@ import { fileURLToPath } from "url";
 import authRoutes from "./routes/auth.js";
 import customerRoutes from "./routes/customers.js";
 import reviewsRoutes from "./routes/reviews.js";
-import {register} from "./controllers/auth.js";
+import {register, registerBusiness} from "./controllers/auth.js";
 import {createReview} from "./controllers/reviews.js";
 import { verifyToken } from "./middleware/auth.js";
 
@@ -41,6 +41,7 @@ const upload = multer({storage});
 
 /* ROUTES WITH FILES */
 app.post("/auth/register", upload.single("picture"), register);
+app.post("/business/auth/register", registerBusiness);
 app.post("/reviews",verifyToken, createReview);
 
 /* ROUTES */
