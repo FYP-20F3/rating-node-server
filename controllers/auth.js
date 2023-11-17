@@ -4,7 +4,7 @@ import Customer from "../models/Customer.js";
 import Business from "../models/Business.js";
 
 /* REGISTER CUSTOMER */
-export const register = async(req, res)=>{
+export const registerCustomer = async(req, res)=>{
     try {
         const{
             firstName,
@@ -66,7 +66,7 @@ export const registerBusiness = async(req, res)=>{
 
 
 /* LOGGING IN */
-export const login = async(req, res)=>{
+export const loginCustomer = async(req, res)=>{
     try {
         const {email, password} = req.body;
         const customer = await Customer.findOne({email: email});

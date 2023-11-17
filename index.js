@@ -11,7 +11,7 @@ import { fileURLToPath } from "url";
 import authRoutes from "./routes/auth.js";
 import customerRoutes from "./routes/customers.js";
 import reviewsRoutes from "./routes/reviews.js";
-import {register, registerBusiness} from "./controllers/auth.js";
+import {registerCustomer, registerBusiness} from "./controllers/auth.js";
 import {createReview} from "./controllers/reviews.js";
 import { verifyToken } from "./middleware/auth.js";
 
@@ -40,7 +40,7 @@ const storage = multer.diskStorage({
 const upload = multer({storage});
 
 /* ROUTES WITH FILES */
-app.post("/auth/register", upload.single("picture"), register);
+app.post("customer/auth/register", upload.single("picture"), registerCustomer);
 app.post("/business/auth/register", registerBusiness);
 app.post("/reviews",verifyToken, createReview);
 
@@ -49,13 +49,10 @@ app.use("/auth", authRoutes);
 app.use("/customers", customerRoutes)
 app.use("/reviews", reviewsRoutes);
 
-
 /* MONGOOSE SETUP */
 const PORT = process.env.PORT || 6000
 mongoose.connect(process.env.MONGO_URL).then(()=>{
     app.listen(PORT, ()=>console.log(`Server Port: ${PORT}`));
-    // User.insertMany(users);
-    // Post.insertMany(posts);
 }).catch((error)=>{
     console.log(`${error.message}, did not connect`);
 })
