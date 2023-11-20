@@ -27,7 +27,7 @@ const CustomerSchema = new mongoose.Schema({
     },
     picturePath: {
         type: String,
-        default: []
+        default: ""
     }
 }, {timestamps: true})
 

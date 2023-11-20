@@ -33,7 +33,6 @@ export const registerCustomer = async(req, res)=>{
 
 /* REGISTER BUSINESS */
 export const registerBusiness = async(req, res)=>{
-    console.log("Here in register");
     try {
         const{
             businessName,

@@ -3,7 +3,7 @@ import {loginCustomer, loginBusiness} from "../controllers/auth.js";
 
 const router = express.Router();
 
-router.post("/customer/login", loginCustomer);
-router.post("/business/login", loginBusiness);
+router.post("/login/customer", loginCustomer);
+router.post("/login/business", loginBusiness);
 
 export default router;
