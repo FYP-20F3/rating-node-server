@@ -1,14 +1,16 @@
 import Review from "../models/Review.js";
+import Business from "../models/Business.js";
 
 /* CREATE */
 export const createReview = async (req, res)=>{
     try {
-        const { businessId, reviewSource, reviewRating, reviewType, reviewTitle, reviewDescription, dateOfExperience, reviewClassificationId } = req.body;
+        let { businessId, reviewSource, reviewRating, reviewType, reviewTitle, reviewDescription, dateOfExperience, reviewClassificationId } = req.body;
 
-        // const customer = await Customer.findById(customerId);
+        const business = await Business.findOne({businessName: businessId});
+
         const newReview = new Review({
             customerId: req.customer.id, 
-            businessId, 
+            businessId: business._id, 
             reviewSource, 
             reviewRating, 
             reviewType, 
@@ -19,7 +21,7 @@ export const createReview = async (req, res)=>{
         });
         await newReview.save();
         const reviews = await Review.find();
-        res.status(201).json(reviews);
+        res.status(201).json(business);
 
     } catch (error) {
         res.status(409).json({msg: error.message});
