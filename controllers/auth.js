@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import Customer from "../models/Customer.js";
 import Business from "../models/Business.js";
+// import BusinessCategory from "../models/BusinessCategory.js";
 
 /* REGISTER CUSTOMER */
 export const registerCustomer = async(req, res)=>{
@@ -30,6 +31,21 @@ export const registerCustomer = async(req, res)=>{
         res.status(500).json({error: error.message});
     }
 }
+
+// export const addCategory = async(req, res)=>{
+//     try {
+//         const{
+//             businessCategoryName,
+//         } = req.body;
+//         const newCategory = new BusinessCategory({
+//             businessCategoryName
+//         })
+//         const savedCategory = await newCategory.save();
+//         res.status(201).json(savedCategory);
+//     } catch (error) {
+//         res.status(500).json({error: error.message});
+//     }
+// }
 
 /* REGISTER BUSINESS */
 export const registerBusiness = async(req, res)=>{

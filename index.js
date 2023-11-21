@@ -48,8 +48,8 @@ app.post("/reviews",verifyToken, createReview);
 
 /* ROUTES */
 app.use("/auth", authRoutes);
-app.use("/customers", customerRoutes)
-app.use("/businesses", businessRoutes)
+app.use("/customers", customerRoutes);
+app.use("/businesses", businessRoutes);
 app.use("/reviews", reviewsRoutes);
 
 /* MONGOOSE SETUP */
