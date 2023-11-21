@@ -20,3 +20,14 @@ export const getBusinessCategory = async (req, res)=>{
         res.status(404).json({message: error.message});
     }
 };
+
+export const getBusinessByCategory = async (req, res)=>{
+    try {
+        const {categoryName} = req.params; 
+        const businesses = await Business.find({businessCategoryId: categoryName});
+
+        res.status(200).json({businesses});
+    } catch (error) {
+        res.status(404).json({message: error.message});
+    }
+};
