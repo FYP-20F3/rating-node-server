@@ -1,11 +1,14 @@
 import express from "express";
-import {getCustomerReviews, getBusinessReviews } from "../controllers/reviews.js";
+import {getCustomerReviews, getBusinessReviews, createReview } from "../controllers/reviews.js";
 import { verifyToken } from "../middleware/auth.js";
 
 const router = express.Router();
 
+/* CREATE */
+router.post("/create",verifyToken, createReview);
+
 /* READ */
-router.get("/:customerId", getCustomerReviews);
+router.get("/customer/:customerId", getCustomerReviews);
 router.get("/business/:businessId", getBusinessReviews);
 
 export default router;

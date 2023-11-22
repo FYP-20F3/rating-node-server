@@ -16,7 +16,7 @@ const BusinessSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true,
-        min: 2,
+        min: 8,
         max: 50
     },
     businessCategoryId: {

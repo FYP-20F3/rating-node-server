@@ -14,8 +14,6 @@ import customerRoutes from "./routes/customers.js";
 import businessRoutes from "./routes/businesses.js";
 import reviewsRoutes from "./routes/reviews.js";
 import {registerCustomer, registerBusiness} from "./controllers/auth.js";
-import {createReview} from "./controllers/reviews.js";
-import { verifyToken } from "./middleware/auth.js";
 
 /* CONFIGURATIONS */
 const __filename = fileURLToPath(import.meta.url);
@@ -44,7 +42,6 @@ const upload = multer({storage});
 /* ROUTES WITH FILES */
 app.post("/auth/register/customer", upload.single("picture"), registerCustomer);
 app.post("/auth/register/business", upload.single("picture"), registerBusiness);
-app.post("/reviews",verifyToken, createReview);
 
 /* ROUTES */
 app.use("/auth", authRoutes);
