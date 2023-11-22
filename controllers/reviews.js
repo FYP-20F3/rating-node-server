@@ -31,8 +31,18 @@ export const createReview = async (req, res)=>{
 /* READ */
 export const getCustomerReviews = async(req, res)=>{
     try {
-        const { customerId } = req.params;
-        const reviews = await Review.find({customerId});
+        const id = req.params.customerId;
+        const reviews = await Review.find({customerId: id});
+        res.status(200).json(reviews);
+    } catch (error) {
+        res.status(404).json({message: error.message})
+    }
+}
+
+export const getBusinessReviews = async(req, res)=>{
+    try {
+        const id = req.params.businessId;
+        const reviews = await Review.find({businessId: id});
         res.status(200).json(reviews);
     } catch (error) {
         res.status(404).json({message: error.message})

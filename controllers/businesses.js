@@ -4,7 +4,6 @@ import BusinessCategory from "../models/BusinessCategory.js";
 /* READ */
 export const getAllBusinesses = async (req, res)=>{
     try {
-        // const {id} = req.params;
         const allBusinesses = await Business.find();
         res.status(200).json(allBusinesses);
     } catch (error) {
