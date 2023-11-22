@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import Customer from "../models/Customer.js";
 import Business from "../models/Business.js";
-// import BusinessCategory from "../models/BusinessCategory.js";
+import BusinessCategory from "../models/BusinessCategory.js";
 
 /* REGISTER CUSTOMER */
 export const registerCustomer = async(req, res)=>{
@@ -57,20 +57,28 @@ export const registerBusiness = async(req, res)=>{
             businessCategoryId,
             businessLogoPath,
             websiteAddress,
-            locationId
+            locationId,
+            overallRating
         } = req.body;
 
         const salt = await bcrypt.genSalt();
         const passwordHash = await bcrypt.hash(password, salt);
+        
+        const businessCategory = await BusinessCategory.findOne({businessCategoryName: businessCategoryId});
+        if(!businessCategory){
+            return res.status(404).json({msg: "Given Business Category Not Found!"});
+        }
+
 
         const newBusiness = new Business({
             businessName,
             email,
             password: passwordHash,
-            businessCategoryId,
+            businessCategoryId: businessCategory.id,
             businessLogoPath,
             websiteAddress,
             locationId,
+            overallRating
         })
         const savedBusiness = await newBusiness.save();
         res.status(201).json(savedBusiness);

@@ -30,7 +30,7 @@ const BusinessSchema = new mongoose.Schema({
     websiteAddress: String,
     locationId: {
         type: String,
-        required: true,
+        default: "someId"
     },
     overallRating: {
         type: Number,
