@@ -23,8 +23,10 @@ export const getBusinessCategory = async (req, res)=>{
 export const getBusinessByCategory = async (req, res)=>{
     try {
         const {categoryName} = req.params; 
-        const businesses = await Business.find({businessCategoryId: categoryName});
-
+        const businessCategory = await BusinessCategory.findOne({businessCategoryName: categoryName});
+        const {id} = businessCategory;
+        const businesses = await Business.find({businessCategoryId: id})
+        
         res.status(200).json({businesses});
     } catch (error) {
         res.status(404).json({message: error.message});
