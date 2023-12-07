@@ -3,7 +3,7 @@ import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
-import multer from "multer";
+// import multer from "multer";
 import helmet from "helmet";
 import morgan from "morgan";
 import path from "path";
@@ -23,25 +23,28 @@ const app = express();
 app.use(express.json());
 app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({policy: "cross-origin"}));
+app.use(cors());
 app.use(morgan("common"));
 app.use(bodyParser.json({limit: "30mb", extended: true}));
 app.use(bodyParser.urlencoded({limit: "30mb", extended: true}));
-app.use("/assets", express.static(path.join(__dirname, "public/assets")));
+// app.use("/assets", express.static(path.join(__dirname, "public/assets")));
 
 /* FILE STORAGE */
-const storage = multer.diskStorage({
-    destination: function (req, file, cb){
-        cb(null, "public/assets");
-    },
-    filename: function(req, file, cb){
-        cb(null, file.originalname);
-    }
-});
-const upload = multer({storage});
+// const storage = multer.diskStorage({
+//     destination: function (req, file, cb){
+//         cb(null, "public/assets");
+//     },
+//     filename: function(req, file, cb){
+//         cb(null, file.originalname);
+//     }
+// });
+// const upload = multer({storage});
 
-/* ROUTES WITH FILES */
-app.post("/auth/register/customer", upload.single("picture"), registerCustomer);
-app.post("/auth/register/business", upload.single("picture"), registerBusiness);
+// /* ROUTES WITH FILES */
+// app.post("/auth/register/customer", upload.single("picture"), registerCustomer);
+// app.post("/auth/register/business", upload.single("picture"), registerBusiness);
+app.post("/auth/register/customer", registerCustomer);
+app.post("/auth/register/business", registerBusiness);
 
 /* ROUTES */
 app.use("/auth", authRoutes);
