@@ -118,7 +118,7 @@ export const loginBusiness = async(req, res)=>{
 
         const token = jwt.sign({id: business._id}, process.env.JWT_SECRET);
         delete business.password;
-        console.log(`Logged In as Business: ${business.businessName}`);
+        console.log(`Logged-In as Business: ${business.businessName}`);
         res.status(200).json({token, business});
     } catch (error) {
         res.status(500).json({error: error.message});
