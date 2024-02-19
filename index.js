@@ -52,6 +52,15 @@ app.use("/customers", customerRoutes);
 app.use("/businesses", businessRoutes);
 app.use("/reviews", reviewsRoutes);
 
+const corsOptions = {
+  origin: ["http://localhost:5173"],
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  credentials: true,
+};
+app.use(cors(corsOptions));  
+
+
+
 /* MONGOOSE SETUP */
 const PORT = process.env.PORT || 6000
 mongoose.connect(process.env.MONGO_URL).then(()=>{
