@@ -100,7 +100,7 @@ export const loginCustomer = async(req, res)=>{
 
         const token = jwt.sign({id: customer._id}, process.env.JWT_SECRET);
         delete customer.password;
-        
+        console.log(`Logged In as Customer: ${customer.firstName}`);
         res.status(200).json({token, customer});
     } catch (error) {
         res.status(500).json({error: error.message});
@@ -118,6 +118,7 @@ export const loginBusiness = async(req, res)=>{
 
         const token = jwt.sign({id: business._id}, process.env.JWT_SECRET);
         delete business.password;
+        console.log(`Logged In as Business: ${business.businessName}`);
         res.status(200).json({token, business});
     } catch (error) {
         res.status(500).json({error: error.message});
