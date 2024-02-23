@@ -19,7 +19,7 @@ const BusinessSchema = new mongoose.Schema({
         min: 8,
         max: 50
     },
-    businessCategoryId: {
+    businessCategory: {
         type: String,
         required: true,
     },
@@ -28,9 +28,9 @@ const BusinessSchema = new mongoose.Schema({
         default: ""
     },
     websiteAddress: String,
-    locationId: {
+    location: {
         type: String,
-        default: "someId"
+        default: "some"
     },
     overallRating: {
         type: Number,
