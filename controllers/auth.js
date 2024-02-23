@@ -48,33 +48,33 @@ export const registerBusiness = async (req, res) => {
       businessName,
       email,
       password,
-      businessCategoryId,
+      businessCategory,
       businessLogoPath,
       websiteAddress,
-      locationId,
+      location,
       overallRating,
     } = req.body;
 
     const salt = await bcrypt.genSalt();
     const passwordHash = await bcrypt.hash(password, salt);
 
-    const businessCategory = await BusinessCategory.findOne({
-      businessCategoryName: businessCategoryId,
-    });
-    if (!businessCategory) {
-      return res
-        .status(404)
-        .json({ msg: "Given Business Category Not Found!" });
-    }
+    // const businessCategory = await BusinessCategory.findOne({
+    //   businessCategoryName: businessCategoryId,
+    // });
+    // if (!businessCategory) {
+    //   return res
+    //     .status(404)
+    //     .json({ msg: "Given Business Category Not Found!" });
+    // }
 
     const newBusiness = new Business({
       businessName,
       email,
       password: passwordHash,
-      businessCategoryId: businessCategory.id,
+      businessCategory,
       businessLogoPath,
       websiteAddress,
-      locationId,
+      location,
       overallRating,
     });
     const savedBusiness = await newBusiness.save();
