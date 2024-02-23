@@ -43,8 +43,7 @@ app.use(bodyParser.urlencoded({limit: "30mb", extended: true}));
 // /* ROUTES WITH FILES */
 // app.post("/auth/register/customer", upload.single("picture"), registerCustomer);
 // app.post("/auth/register/business", upload.single("picture"), registerBusiness);
-app.post("/auth/register/customer", registerCustomer);
-app.post("/auth/register/business", registerBusiness);
+
 
 /* ROUTES */
 app.use("/auth", authRoutes);
