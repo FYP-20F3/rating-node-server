@@ -8,7 +8,7 @@ const router = express.Router();
 router.post("/create",verifyToken, createReview);
 
 /* READ */
-router.get("/customer/:customerId", getCustomerReviews);
-router.get("/business/:businessId", getBusinessReviews);
+router.get("/customer/:customerId",verifyToken, getCustomerReviews);
+router.get("/business/:businessId",verifyToken, getBusinessReviews);
 
 export default router;
