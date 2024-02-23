@@ -63,12 +63,6 @@ export const registerBusiness = async(req, res)=>{
 
         const salt = await bcrypt.genSalt();
         const passwordHash = await bcrypt.hash(password, salt);
-        
-        // const businessCategory = await BusinessCategory.findOne({businessCategoryName: businessCategoryId});
-        // if(!businessCategory){
-        //     return res.status(404).json({msg: "Given Business Category Not Found!"});
-        // }
-
 
         const newBusiness = new Business({
             businessName,
