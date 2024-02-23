@@ -1,6 +1,10 @@
 import express from "express";
-import { loginCustomer, loginBusiness, registerCustomer, registerBusiness } from "../controllers/auth.js";
-// import {loginCustomer, loginBusiness, addCategory} from "../controllers/auth.js";
+import {
+  loginCustomer,
+  loginBusiness,
+  registerCustomer,
+  registerBusiness,
+} from "../controllers/auth.js";
 
 const router = express.Router();
 

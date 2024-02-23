@@ -46,13 +46,10 @@ export const registerBusiness = async (req, res) => {
   try {
     const {
       businessName,
+      websiteAddress,
+      businessCategory,
       email,
       password,
-      businessCategory,
-      businessLogoPath,
-      websiteAddress,
-      location,
-      overallRating,
     } = req.body;
 
     const salt = await bcrypt.genSalt();
@@ -72,10 +69,11 @@ export const registerBusiness = async (req, res) => {
       email,
       password: passwordHash,
       businessCategory,
-      businessLogoPath,
+      businessLogoPath:
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbyWPR_XEwFflTnPQw8tNkj2_-8491kECbLpcjpKm3Zw&s",
       websiteAddress,
-      location,
-      overallRating,
+      location: "none",
+      overallRating: 5,
     });
     const savedBusiness = await newBusiness.save();
     res.status(201).json(savedBusiness);
