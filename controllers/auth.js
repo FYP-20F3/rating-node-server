@@ -2,7 +2,6 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import Customer from "../models/Customer.js";
 import Business from "../models/Business.js";
-import BusinessCategory from "../models/BusinessCategory.js";
 
 /* REGISTER CUSTOMER */
 export const registerCustomer = async (req, res) => {
@@ -10,7 +9,6 @@ export const registerCustomer = async (req, res) => {
     const { firstName, lastName, email, password } = req.body;
     const salt = await bcrypt.genSalt();
     const passwordHash = await bcrypt.hash(password, salt);
-
     const newCustomer = new Customer({
       firstName,
       lastName,
@@ -44,13 +42,8 @@ export const registerCustomer = async (req, res) => {
 /* REGISTER BUSINESS */
 export const registerBusiness = async (req, res) => {
   try {
-    const {
-      businessName,
-      websiteAddress,
-      businessCategory,
-      email,
-      password,
-    } = req.body;
+    const { businessName, websiteAddress, businessCategory, email, password } =
+      req.body;
 
     const salt = await bcrypt.genSalt();
     const passwordHash = await bcrypt.hash(password, salt);
@@ -86,7 +79,8 @@ export const registerBusiness = async (req, res) => {
 export const loginCustomer = async (req, res) => {
   try {
     const { email, password } = req.body;
-    let customer = await Customer.findOne({ email });
+    let customer = await Customer.findOne({ email: email });
+    console.log(customer);
     if (!customer)
       return res.status(400).json({ msg: "Customer does not exist" });
 

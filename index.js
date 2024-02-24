@@ -13,7 +13,6 @@ import authRoutes from "./routes/auth.js";
 import customerRoutes from "./routes/customers.js";
 import businessRoutes from "./routes/businesses.js";
 import reviewsRoutes from "./routes/reviews.js";
-import {registerCustomer, registerBusiness} from "./controllers/auth.js";
 
 /* CONFIGURATIONS */
 const __filename = fileURLToPath(import.meta.url);
