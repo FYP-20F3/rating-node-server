@@ -4,9 +4,9 @@ import Business from "../models/Business.js";
 /* CREATE */
 export const createReview = async (req, res)=>{
     try {
-        let { businessId, reviewSource, reviewRating, reviewType, reviewTitle, reviewDescription,Sentiment, reviewClassificationId } = req.body;
+        let { businessName, reviewSource, reviewRating, reviewType, reviewTitle, reviewDescription,Sentiment, reviewClassificationId } = req.body;
 
-        const business = await Business.findOne({businessName: businessId});
+        const business = await Business.findOne({businessName: businessName});
 
         const newReview = new Review({
             customerId: req.customer.id, 
@@ -48,4 +48,15 @@ export const getBusinessReviews = async(req, res)=>{
         res.status(404).json({message: error.message})
     }
 }
+
+export const countBusinessReviews = async (businessId) => {
+    console.log(businessId);
+    try {
+      const count = await Review.countDocuments({ businessId: businessId });
+      console.log(`Number of reviews for business ${businessId}: ${count}`);
+      return count;
+    } catch (error) {
+      console.error('Error counting reviews:', error.message);
+    }
+};
 

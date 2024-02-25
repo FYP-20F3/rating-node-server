@@ -40,44 +40,9 @@ export const registerCustomer = async (req, res) => {
 // }
 
 /* REGISTER BUSINESS */
-<<<<<<< HEAD
-export const registerBusiness = async(req, res)=>{
-    try {
-        const{
-            businessName,
-            email,
-            password,
-            businessCategory,
-            businessLogoPath,
-            websiteAddress,
-            location,
-            overallRating
-        } = req.body;
-
-        const salt = await bcrypt.genSalt();
-        const passwordHash = await bcrypt.hash(password, salt);
-
-        const newBusiness = new Business({
-            businessName,
-            email,
-            password: passwordHash,
-            businessCategory,
-            businessLogoPath,
-            websiteAddress,
-            location,
-            overallRating
-        })
-        const savedBusiness = await newBusiness.save();
-        res.status(201).json(savedBusiness);
-    } catch (error) {
-        res.status(500).json({error: error.message});
-    }
-}
-
-=======
 export const registerBusiness = async (req, res) => {
   try {
-    const { businessName, websiteAddress, businessCategory, email, password } =
+    const { businessName, websiteAddress, businessCategory, email, password, businessLogoPath } =
       req.body;
 
     const salt = await bcrypt.genSalt();
@@ -109,7 +74,6 @@ export const registerBusiness = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
->>>>>>> 10cb7bf80a63b890f78445926279190f6c6d8c7f
 
 /* LOGGING IN */
 export const loginCustomer = async (req, res) => {
