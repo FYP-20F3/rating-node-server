@@ -4,8 +4,15 @@ import {countBusinessReviews} from "../controllers/reviews.js";
 export const getAllBusinesses = async (req, res) => {
   try {
     const allBusinesses = await Business.find();
-    console.log("Hello Businesses!");
-    res.status(200).json(allBusinesses);
+    const businessesWithReviewCount = await Promise.all(
+    allBusinesses.map(async (business) => {
+        // Clone the business object to avoid mutating the original document
+        const businessObject = business.toObject();
+        businessObject.reviewCount = await countBusinessReviews(business.id);
+        return businessObject;
+    })
+    );
+    res.status(200).json(businessesWithReviewCount);
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
@@ -44,14 +51,21 @@ export const getBusinessesByLocation = async (req, res) => {
 };
 
 export const getBusinessesByCategory = async (req, res) => {
-  console.log("Hello Category!");
   try {
     const { categoryName } = req.params;
     const businessList = await Business.find(
       { businessCategory: categoryName },
       { password: 0 } // Exclude the 'password' field
     );
-    res.status(200).json({ businessList });
+    const businessesWithReviewCount = await Promise.all(
+      businessList.map(async (business) => {
+        // Clone the business object to avoid mutating the original document
+        const businessObject = business.toObject();
+        businessObject.reviewCount = await countBusinessReviews(business.id);
+        return businessObject;
+    })
+    );
+    res.status(200).json(businessesWithReviewCount);
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
