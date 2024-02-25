@@ -60,3 +60,13 @@ export const countBusinessReviews = async (businessId) => {
     }
 };
 
+// export const countCategoryReviews = async (category) => {
+//     console.log(category);
+//     try {
+//       const count = await Review.countDocuments({ businessId: businessId });
+//       console.log(`Number of reviews for business ${businessId}: ${count}`);
+//       return count;
+//     } catch (error) {
+//       console.error('Error counting reviews:', error.message);
+//     }
+// };

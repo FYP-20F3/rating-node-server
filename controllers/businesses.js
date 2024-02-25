@@ -27,6 +27,22 @@ export const getBusinessesByName = async (req, res) => {
   }
 };
 
+export const getBusinessesByLocation = async (req, res) => {
+  try {
+    const { location } = req.params;
+    const business = await Business.find(
+      { location: location },
+      { password: 0 } // Exclude the 'password' field
+    );
+
+    // const reviewCount = await countBusinessReviews(business.id);
+    
+    res.status(200).json({ business });
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+};
+
 export const getBusinessesByCategory = async (req, res) => {
   console.log("Hello Category!");
   try {
