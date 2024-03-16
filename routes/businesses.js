@@ -1,16 +1,16 @@
 import express from "express";
 import {
-  getAllBusinesses,
+  searchAndFilter,
   getBusinessesByCategory,
   getBusinessesByName,
-  getBusinessesByLocation
+  getBusinessesByLocation,
 } from "../controllers/businesses.js";
 import { verifyToken } from "../middleware/auth.js";
 
 const router = express.Router();
 
 /* READ */
-router.get("/", getAllBusinesses);
+router.get("/search", searchAndFilter);
 router.get("/business/:businessName", getBusinessesByName);
 router.get("/category/:categoryName", getBusinessesByCategory);
 router.get("/:location", getBusinessesByLocation);
