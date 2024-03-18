@@ -11,13 +11,13 @@ export const createReview = async (req, res)=>{
         const newReview = new Review({
             customerId: req.customer.id, 
             businessId: business.id, 
-            reviewSource, 
+            // reviewSource, 
             reviewRating, 
             reviewType, 
             reviewTitle, 
             reviewDescription,
-            Sentiment, 
-            reviewClassificationId
+            // Sentiment, 
+            // reviewClassificationId
         });
         await newReview.save();
         const reviews = await Review.find();
