@@ -6,8 +6,17 @@ export const searchAndFilter = async (req, res) => {
   try {
     // Construct the query object with dynamic filters
     let queryObj = {};
+
     if (req.query.searchName) {
-      queryObj.businessName = req.query.searchName;
+      // Replace %20 with actual spaces
+      const searchString = req.query.searchName.replace(/%20/g, " ");
+      console.log(searchString);
+
+      // Create a regex pattern to match any two characters, ignoring case
+      const searchRegex = new RegExp(searchString, "i");
+
+      // Construct the query to search for businessName matching the regex pattern
+      queryObj.businessName = searchRegex;
     }
 
     if (req.query.category) {
@@ -25,9 +34,6 @@ export const searchAndFilter = async (req, res) => {
       }
     }
 
-    if (req.query.name) {
-      queryObj.businessName = req.query.name;
-    }
     if (req.query.rating) {
       // Assuming rating is a numeric value and you want businesses with a rating greater or equal
       queryObj.overallRating = { $gte: Number(req.query.rating) };
@@ -70,8 +76,11 @@ export const searchAndFilter = async (req, res) => {
           const latestReviewDateB = getLatestReviewDate(b.reviews);
           return latestReviewDateB - latestReviewDateA;
         });
+      } else if (req.query.sort === "none") {
+        // Return businesses without any sorting
+        // res.status(200).json(businessesWithReviewCount);
+        // return;
       }
-      // You can add more sorting options here if needed
     }
 
     res.status(200).json(businessesWithReviewCount);

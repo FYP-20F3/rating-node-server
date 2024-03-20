@@ -16,7 +16,7 @@ const reviewSchema = mongoose.Schema(
     },
     reviewSource: {
       type: String,
-      required: true,
+      // required: true,
     },
     reviewRating: {
       type: Number,
@@ -41,7 +41,7 @@ const reviewSchema = mongoose.Schema(
     dateOfExperience: {
       type: Date,
       default: Date.now,
-    },
+    }
     Sentiment: {
       type: String,
       default: "Neutral",

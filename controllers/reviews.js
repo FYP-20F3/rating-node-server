@@ -16,7 +16,7 @@ export const createReview = async (req, res)=>{
             reviewType, 
             reviewTitle, 
             reviewDescription,
-            // Sentiment, 
+            Sentiment, 
             // reviewClassificationId
         });
         await newReview.save();
