@@ -46,7 +46,6 @@ const reviewSchema = mongoose.Schema(
       type: String,
       default: "Neutral",
     },
-    reviewClassificationId: String,
   },
   { timestamps: true }
 );

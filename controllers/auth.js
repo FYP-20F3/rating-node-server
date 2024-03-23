@@ -42,8 +42,14 @@ export const registerCustomer = async (req, res) => {
 /* REGISTER BUSINESS */
 export const registerBusiness = async (req, res) => {
   try {
-    const { businessName, websiteAddress, businessCategory, email, password, businessLogoPath } =
-      req.body;
+    const {
+      businessName,
+      websiteAddress,
+      businessCategory,
+      email,
+      password,
+      businessLogoPath,
+    } = req.body;
 
     const salt = await bcrypt.genSalt();
     const passwordHash = await bcrypt.hash(password, salt);
@@ -89,8 +95,10 @@ export const loginCustomer = async (req, res) => {
 
     const token = jwt.sign({ id: customer._id }, process.env.JWT_SECRET);
     const { password: pass, ...rest } = customer._doc;
+    const role = "customer";
+
     console.log(`Logged In as Customer: ${customer.firstName}`);
-    res.status(200).json({ token, rest });
+    res.status(200).json({ token, rest, role });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -108,8 +116,11 @@ export const loginBusiness = async (req, res) => {
 
     const token = jwt.sign({ id: business._id }, process.env.JWT_SECRET);
     const { password: pass, ...rest } = business._doc;
+    const role = "business";
+
     console.log(`Logged-In as Business: ${business.businessName}`);
-    res.status(200).json({ token, rest });
+
+    res.status(200).json({ token, rest, role });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

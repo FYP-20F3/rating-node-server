@@ -1,6 +1,7 @@
 import Business from "../models/Business.js";
 import { countBusinessReviews } from "../controllers/reviews.js";
 import Review from "../models/Review.js";
+import Customer from "../models/Customer.js";
 /* READ */
 export const searchAndFilter = async (req, res) => {
   try {
@@ -98,21 +99,35 @@ const getLatestReviewDate = (reviews) => {
   return new Date(Math.max(...reviews.map((review) => new Date(review.date))));
 };
 
-// export const getBusinessesByName = async (req, res) => {
-//   try {
-//     const { businessName } = req.params;
-//     const business = await Business.findOne(
-//       { businessName: businessName },
-//       { password: 0 },// Exclude the 'password' field
-//     );
+export const getBusinessInfoById = async (req, res) => {
+  try {
+    const { businessId } = req.params;
+    const business = await Business.findOne(
+      { _id: businessId },
+      { password: 0 } // Exclude the 'password' field
+    );
 
-//     const reviewCount = await countBusinessReviews(business.id);
+    const reviews = await Review.find({ businessId });
+    const populatedReviews = [];
 
-//     res.status(200).json({ business, reviewCount });
-//   } catch (error) {
-//     res.status(404).json({ message: error.message });
-//   }
-// };
+    for (const review of reviews) {
+      const customer = await Customer.findOne({ _id: review.customerId });
+      const reviewObject = review.toObject();
+      reviewObject.customer = customer;
+      populatedReviews.push(reviewObject);
+    }
+
+    const reviewCount = await countBusinessReviews(business.id);
+    const businessObject = business.toObject();
+    businessObject.reviewCount = reviewCount;
+    businessObject.reviews = populatedReviews;
+
+    res.status(200).json(businessObject);
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+};
+
 
 // export const getBusinessesByLocation = async (req, res) => {
 //   try {
