@@ -34,13 +34,37 @@ export const createReview = async (req, res) => {
 
 /* READ */
 export const getCustomerReviews = async (req, res) => {
-  try {
-    const id = req.params.customerId;
-    const reviews = await Review.find({ customerId: id });
-    res.status(200).json(reviews);
-  } catch (error) {
-    res.status(404).json({ message: error.message });
-  }
+    const { keyword, rating, category, dateSort } = req.query;
+    const customerId = req.params.customerId;
+  
+    let query = { customerId };
+  
+    if (keyword) {
+      query.$text = { $search: keyword }; // Ensure you've set up a text index in MongoDB
+    }
+  
+    if (rating) {
+      query.rating = rating;
+    }
+  
+    if (category) {
+      query.category = category;
+    }
+  
+    let sortOptions = {};
+    if (dateSort) {
+      sortOptions.createdAt = dateSort === 'new' ? -1 : 1;
+    }
+  
+    try {
+      const reviews = await Review.find(query)
+                                  .populate('replies') // Assuming you want to populate replies
+                                  .sort(sortOptions)
+                                  .exec();
+      res.json(reviews);
+    } catch (error) {
+      res.status(500).send(error);
+    }
 };
 
 export const getBusinessReviews = async (req, res) => {
