@@ -46,6 +46,10 @@ const reviewSchema = mongoose.Schema(
       type: String,
       default: "Neutral",
     },
+    replies: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'ReviewReply',
+    }]    
   },
   { timestamps: true }
 );
