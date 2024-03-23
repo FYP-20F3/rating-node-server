@@ -3,28 +3,37 @@ import Business from "../models/Business.js";
 
 /* CREATE */
 export const createReview = async (req, res)=>{
+    
+    const { keyword, rating, category, dateSort } = req.query;
+    const customerId = req.params.customerId;
+
+    let query = { customerId };
+
+    if (keyword) {
+        query.$text = { $search: keyword }; // Ensure you've set up a text index in MongoDB
+    }
+
+    if (rating) {
+        query.rating = rating;
+    }
+
+    if (category) {
+        query.category = category;
+    }
+
+    let sortOptions = {};
+    if (dateSort) {
+        sortOptions.createdAt = dateSort === 'new' ? -1 : 1;
+    }
+
     try {
-        let { businessName, reviewSource, reviewRating, reviewType, reviewTitle, reviewDescription,Sentiment, reviewClassificationId } = req.body;
-
-        const business = await Business.findOne({businessName: businessName});
-
-        const newReview = new Review({
-            customerId: req.customer.id, 
-            businessId: business.id, 
-            // reviewSource, 
-            reviewRating, 
-            reviewType, 
-            reviewTitle, 
-            reviewDescription,
-            Sentiment, 
-            // reviewClassificationId
-        });
-        await newReview.save();
-        const reviews = await Review.find();
-        res.status(201).json(reviews);
-
+        const reviews = await Review.find(query)
+                                    .populate('replies') // Assuming you want to populate replies
+                                    .sort(sortOptions)
+                                    .exec();
+        res.json(reviews);
     } catch (error) {
-        res.status(409).json({msg: error.message});
+        res.status(500).send(error);
     }
 }
 
