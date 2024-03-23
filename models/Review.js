@@ -41,12 +41,11 @@ const reviewSchema = mongoose.Schema(
     dateOfExperience: {
       type: Date,
       default: Date.now,
-    }
+    },
     Sentiment: {
       type: String,
       default: "Neutral",
     },
-    reviewClassificationId: String,
   },
   { timestamps: true }
 );
