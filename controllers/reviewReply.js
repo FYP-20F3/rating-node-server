@@ -1,9 +1,8 @@
 import express from "express";
 import ReviewReply from "../models/ReviewReply.js"; // Path to your ReviewReply model
-const router = express.Router();
 
 // POST route to create a reply
-export const postReview = async (req, res) => {
+export const postReviewReply = async (req, res) => {
   try {
     const reply = new ReviewReply({
       reviewId: req.body.reviewId,
