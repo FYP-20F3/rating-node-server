@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const CustomerSchema = new mongoose.Schema(
+const AdminSchema = new mongoose.Schema(
   {
     firstName: {
       type: String,
@@ -30,17 +30,9 @@ const CustomerSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    block: {
-      type: Boolean,
-      default: false,
-    },
-    blockTimeStamp: {
-      type: Date,
-      default: Date.now,
-    },
   },
   { timestamps: true }
 );
 
-const Customer = mongoose.model("Customer", CustomerSchema);
-export default Customer;
+const Admin = mongoose.model("Admin", AdminSchema);
+export default Admin;

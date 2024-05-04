@@ -3,15 +3,13 @@ import mongoose from "mongoose";
 const reviewSchema = mongoose.Schema(
   {
     customerId: {
-      //   type: mongoose.Schema.Types.ObjectId,
-      type: String,
-      //   ref: "Customer",
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Customer",
       required: true,
     },
     businessId: {
-      //   type: mongoose.Schema.Types.ObjectId,
-      type: String,
-      //   ref: "Business",
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Business",
       required: true,
     },
     reviewSource: {
@@ -45,6 +43,10 @@ const reviewSchema = mongoose.Schema(
     Sentiment: {
       type: String,
       default: "Neutral",
+    },
+    block: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }

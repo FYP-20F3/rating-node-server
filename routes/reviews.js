@@ -1,6 +1,13 @@
 import express from "express";
-import {getCustomerReviews, getBusinessReviews, createReview } from "../controllers/reviews.js";
-import {postReview, getReviewReply } from "../controllers/reviewReply.js";
+import {
+  getCustomerReviews,
+  getBusinessReviews,
+  searchAndFilterReviews,
+  createReview,
+  toggleBlockReview,
+  deleteReview,
+} from "../controllers/reviews.js";
+import { postReviewReply, getReviewReply } from "../controllers/reviewReply.js";
 import { verifyToken } from "../middleware/auth.js";
 
 const router = express.Router();
@@ -9,10 +16,13 @@ const router = express.Router();
 router.post("/create", createReview);
 
 /* READ */
-router.get("/customer/:customerId", verifyToken, getCustomerReviews);
-router.get("/business/:businessId", verifyToken, getBusinessReviews);
+router.get("/customer/:customerId", getCustomerReviews);
+router.get("/business/:businessId", getBusinessReviews);
+router.get("/searchReviews/:businessId", searchAndFilterReviews);
 
-router.post('/replies', postReview);
-router.get('/:reviewId/replies', getReviewReply);
+router.post("/replies", postReviewReply);
+router.put("/:reviewId/block", toggleBlockReview);
+router.delete("/:reviewId", deleteReview);
+router.get("/:reviewId/replies", getReviewReply);
 
 export default router;
