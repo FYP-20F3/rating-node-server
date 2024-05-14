@@ -48,6 +48,11 @@ const reviewSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    reviewClassification: {
+      type: String,
+      enum: ["complain", "review"],
+      default: "review",
+    },
   },
   { timestamps: true }
 );

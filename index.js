@@ -14,6 +14,9 @@ import customerRoutes from "./routes/customers.js";
 import businessRoutes from "./routes/businesses.js";
 import reviewsRoutes from "./routes/reviews.js";
 import adminRoutes from "./routes/admin.js";
+import chatRoutes from "./routes/chat.js";
+import complaintRoutes from "./routes/complaint.js";
+import messageRoutes from "./routes/message.js";
 
 /* CONFIGURATIONS */
 const __filename = fileURLToPath(import.meta.url);
@@ -50,6 +53,9 @@ app.use("/customers", customerRoutes);
 app.use("/businesses", businessRoutes);
 app.use("/reviews", reviewsRoutes);
 app.use("/admin", adminRoutes);
+app.use("/chat", chatRoutes);
+app.use("/message", messageRoutes);
+app.use("/complaint", complaintRoutes);
 
 const corsOptions = {
   origin: ["http://localhost:5173"],
@@ -135,7 +141,7 @@ mongoose
 //     }
 
 //     // console.log("Verdict:", verdictLine);
-//     // console.log("Explanation:", explanation); 
+//     // console.log("Explanation:", explanation);
 //     // console.log("Suggestions:", suggestions);
 
 //     // **Return the response as an object with conditional properties**

@@ -4,6 +4,12 @@ import dotenv from "dotenv";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import ReviewReply from "../models/ReviewReply.js";
 import Customer from "../models/Customer.js";
+import Complaint from "../models/Complaint.js";
+import Chat from "../models/Chat.js";
+import Message from "../models/Message.js";
+import mongoose from "mongoose";
+
+const { ObjectId } = mongoose.Types;
 
 // configure dotenv
 dotenv.config();
@@ -27,19 +33,22 @@ export const createReview = async (req, res) => {
 
     // console.log(reviewSentiment);
 
-    // gemini pro
+    // Calculate review sentiment
     const reviewSentiment = await reviewSemanticAnalysis(reviewDescription);
-    //console.log(reviewSentiment);
 
+    // // Detect review authenticity
     const detectReview = await fakenessDetection(reviewDescription);
-    console.log(detectReview, "detectReview");
-    if (detectReview.semantics !== "Authentic") {
+    if (detectReview.semantics == " Fake" || detectReview.semantics == null) {
       return res.status(300).json({
         semantics: detectReview.semantics,
         suggestions: detectReview.details.suggestions,
       });
     }
 
+    // Check if review should be classified as complain
+    const reviewClassification = reviewRating < 3 ? "complain" : "review";
+
+    // Create the new review
     const newReview = new Review({
       customerId,
       businessId,
@@ -49,8 +58,10 @@ export const createReview = async (req, res) => {
       reviewDescription,
       dateOfExperience,
       Sentiment: reviewSentiment,
+      reviewClassification,
     });
 
+    // Save the review
     const savedReview = await newReview.save();
 
     if (savedReview) {
@@ -71,6 +82,36 @@ export const createReview = async (req, res) => {
       // Update the overallRating of the business
       business.overallRating = trimmedAverageRating;
       await business.save();
+    }
+
+    // If review is classified as complain, add entry to Complaint collection
+    if (reviewClassification === "complain") {
+      const newComplaint = new Complaint({
+        reviewId: savedReview._id,
+        complaintStatus: "pending",
+      });
+      const savedComplaint = await newComplaint.save();
+
+      // Add entry to Chat collection
+      const newChat = new Chat({
+        members: [
+          {
+            customer: new ObjectId(customerId),
+            business: new ObjectId(businessId),
+            complaintId: savedComplaint._id,
+          },
+        ],
+      });
+      const savedChat = await newChat.save();
+
+      // Add entry to Message collection
+      const newMessage = new Message({
+        chatId: savedChat._id,
+        senderId: customerId,
+        message: reviewDescription,
+        complaintId: savedComplaint._id,
+      });
+      await newMessage.save();
     }
 
     res.status(201).json(savedReview);
@@ -210,11 +251,9 @@ export const toggleBlockReview = async (req, res) => {
     } else if (action === "unblock") {
       // Unblock the review
       await Review.findByIdAndUpdate(reviewId, { block: false });
-      res
-        .status(200)
-        .json({
-          msg: `Review ${review.reviewTitle} ${review.reviewTitle} unblocked successfully`,
-        });
+      res.status(200).json({
+        msg: `Review ${review.reviewTitle} ${review.reviewTitle} unblocked successfully`,
+      });
     } else {
       return res.status(400).json({ msg: "Invalid action" });
     }
@@ -356,6 +395,7 @@ export async function reviewSemanticAnalysis(reviewDescription) {
 
     const result = await model.generateContent(promptText);
     const reviewSemantics = result.response.text();
+    console.log(reviewSemantics);
     return reviewSemantics;
   } catch (error) {
     console.error("Error:", error);
@@ -381,7 +421,26 @@ export async function fakenessDetection(reviewDescription) {
       generationConfig,
     });
 
-    const prompt = `Please analyze the following review and provide a one-word judgment: 'Authentic' if it is genuine or 'Fake' if it is not.\n\nReview:"${reviewDescription}"\n\nIf the review is determined to be fake, then provide suggestions to make it more genuine with the heading "Suggestions".\n. Consider it genuine if it meets two or three of the following conditions:\nDetailed description of personal experience.\nMention of specific features or aspects of the product/service.\nUse of language consistent with genuine opinions.`;
+    const prompt = `Please analyze the following review and assess its authenticity:
+
+    Review: "${reviewDescription}"
+    
+    **Authenticity:**
+    
+    * Detailed description of personal experience (Yes/No)
+    * Mention of specific features or aspects (Yes/No)
+    * Language consistent with genuine opinions (Yes/No)
+    
+    **Overall Judgment:**
+    
+    * If all three conditions are "No", mark the review as "Fake".
+    * If two or three conditions are "Yes", mark the review as "Likely Authentic".
+    * If only one condition is "Yes", the review is "Uncertain and mark it as "Fake".
+    
+    **Suggestions (Optional):**
+    
+    If the review is marked as "Fake" or "Uncertain", provide suggestions to improve its authenticity (e.g., adding details, mentioning specific features).
+    `;
 
     const authenticExample = `Output for 'Authentic' Review:\nAuthentic\nExplanation:\n1. [Explanation 1]\n2. [Explanation 2]\n`;
     const fakeExample = `Output for 'Fake' Review:\nFake\nSuggestions:\n1. [Suggestion 1]\n2. [Suggestion 2]\n3. [Suggestion 3]\n`;
@@ -393,45 +452,65 @@ export async function fakenessDetection(reviewDescription) {
     const content = result.response.text();
     console.log(content, "content");
 
-    // **Improved parsing and conditional handling**
+    // Parse the response to extract relevant information
     const lines = content.split("\n");
-    const verdictLine = lines[0].trim(); // Get the verdict line (Authentic/Fake)
-    let explanation = null;
+    let verdict = null;
     let suggestions = null;
+    let explanation = null;
 
-    for (let i = 1; i < lines.length; i++) {
+    // Iterate through the lines to find the verdict, explanation, and suggestions
+    for (let i = 0; i < lines.length; i++) {
       const line = lines[i].trim();
-      if (verdictLine === "Authentic" && line.startsWith("Explanation:")) {
-        // Skip the header line 'Explanation:'
-        i++; // Move to the next line for the first suggestion
-
+      if (line.startsWith("**Overall Judgment:**")) {
+        // Extract the overall judgment
+        verdict = line.substring(line.lastIndexOf(":") + 1).trim();
+        // Remove any extra formatting (e.g., '**') from the verdict
+        verdict = verdict.replace(/\*\*/g, "");
+        console.log("Verdict:", verdict);
+      } else if (line.startsWith("**Suggestions:**")) {
+        // Extract the suggestions
+        suggestions = [];
+        i++; // Move to the next line for the suggestion details
         while (i < lines.length && lines[i].trim() !== "") {
-          explanation = explanation || []; // Initialize suggestions if needed (only for Fake)
-          explanation.push(lines[i].trim()); // Extract suggestions
-          i++; // Move to the next line for the next potential suggestion
+          suggestions.push(lines[i].trim());
+          i++;
         }
-      } else if (verdictLine === "Fake" && line.startsWith("Suggestions:")) {
-        // Skip the header line 'Suggestions:'
-        i++; // Move to the next line for the first suggestion
-
+      } else if (line.startsWith("**Explanation:**")) {
+        // Extract the explanation
+        explanation = [];
+        i++; // Move to the next line for the explanation details
         while (i < lines.length && lines[i].trim() !== "") {
-          suggestions = suggestions || []; // Initialize suggestions if needed (only for Fake)
-          suggestions.push(lines[i].trim()); // Extract suggestions
-          i++; // Move to the next line for the next potential suggestion
+          explanation.push(lines[i].trim());
+          i++;
         }
       }
     }
 
-    // console.log("Verdict:", verdictLine);
-    // console.log("Explanation:", explanation);
-    // console.log("Suggestions:", suggestions);
+    // Log the extracted information for debugging
+    console.log("Verdict:", verdict);
+    console.log("Suggestions:", suggestions);
+    console.log("Explanation:", explanation);
 
     // **Return the response as an object with conditional properties**
     return {
-      semantics: verdictLine,
+      semantics: verdict,
       details: {
-        explanation: explanation ? explanation : null, // Include only if Authentic
+        suggestions: suggestions ? suggestions : null, // Include only if there are suggestions
+        explanation: explanation ? explanation : null, // Include only if there is an explanation
+      },
+    };
+
+    // Log the extracted information for debugging
+    console.log("Verdict:", verdict);
+    console.log("Suggestions:", suggestions);
+    console.log("Explanation:", explanation);
+
+    // **Return the response as an object with conditional properties**
+    return {
+      semantics: verdict,
+      details: {
         suggestions: suggestions ? suggestions : null, // Include only if Fake
+        explanation: explanation ? explanation : null, // Include if Fake or Likely Authentic
       },
     };
   } catch (error) {
