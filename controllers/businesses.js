@@ -5,6 +5,8 @@ import {
 } from "../controllers/reviews.js";
 import Review from "../models/Review.js";
 import Customer from "../models/Customer.js";
+import bcrypt from "bcrypt";
+import cloudinary from "cloudinary";
 
 /* READ */
 export const searchAndFilter = async (req, res) => {
@@ -106,7 +108,10 @@ const getLatestReviewDate = (reviews) => {
 
 export const getAllBusinesses = async (req, res) => {
   try {
-    const businesses = await Business.find({}, { password: 0, businessDescription: 0, __v: 0 });
+    const businesses = await Business.find(
+      {},
+      { password: 0, businessDescription: 0, __v: 0 }
+    );
     res.status(200).json(businesses);
   } catch (error) {
     res.status(404).json({ message: error.message });
@@ -256,6 +261,79 @@ export const deleteBusiness = async (req, res) => {
       msg: `Business ${deletedBusiness.businessName} deleted successfully`,
     });
   } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// cloudinary.v2.config({
+//   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+//   api_key: process.env.CLOUDINARY_API_KEY,
+//   api_secret: process.env.CLOUDINARY_API_SECRET,
+// });
+
+// Controller to edit business information
+export const editBusinessInfo = async (req, res) => {
+  try {
+    const { businessId } = req.params;
+    const { businessName, password, businessDescription, location, file } =
+      req.body; // Extracting data from the request body
+
+    // Check if businessId is provided
+    if (!businessId) {
+      return res.status(201).json({ msg: "Business ID is required" });
+    }
+
+    // Find the business by ID
+    let business = await Business.findById(businessId);
+
+    // Check if business exists
+    if (!business) {
+      return res.status(201).json({ msg: "Business not found" });
+    }
+
+    // Check if the new password is provided and it's different from the old password
+    if (password) {
+      const isSamePassword = await bcrypt.compare(password, business.password);
+      if (isSamePassword) {
+        return res.status(201).json({
+          msg: "The new password cannot be the same as the old password",
+        });
+      }
+      // Hash the new password before saving
+      const salt = await bcrypt.genSalt();
+
+      business.password = await bcrypt.hash(password, salt);
+    }
+
+    // Update business information
+    if (businessName && businessName != business.businessName) {
+      business.businessName = businessName;
+    }
+    if (
+      businessDescription &&
+      businessDescription != business.businessDescription
+    ) {
+      business.businessDescription = businessDescription;
+    }
+    if (location && location != business.location) {
+      business.location = location;
+    }
+
+    // Check if file (image) is provided
+    // if (file) {
+    //   // Upload image to Cloudinary
+    //   const uploadResult = await cloudinary.uploader.upload(file, { folder: 'business-logos' });
+    //   // Update business logo path with the secure URL from Cloudinary
+    //   // console.log(uploadResult);
+    //   business.businessLogoPath = uploadResult.secure_url;
+    // }
+
+    // Save the updated business info
+    await business.save();
+
+    res.status(200).json({ msg: "Business info updated successfully" });
+  } catch (error) {
+    console.error("Error updating business information:", error);
     res.status(500).json({ error: error.message });
   }
 };

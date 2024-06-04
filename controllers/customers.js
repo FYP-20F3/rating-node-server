@@ -1,4 +1,5 @@
 import Customer from "../models/Customer.js";
+import bcrypt from "bcrypt";
 
 /* READ */
 export const getCustomer = async (req, res) => {
@@ -94,6 +95,60 @@ export const deleteCustomer = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+export async function editCustomer(req, res) {
+  const { customerId } = req.params;
+  const { firstName, lastName, password } = req.body;
+
+  // Validate request body for presence of at least one field
+  if (!firstName && !lastName && !password) {
+    return res.status(400).json({ msg: "No fields provided for update" });
+  }
+
+  try {
+    // Find the customer to update
+    const customer = await Customer.findById(customerId);
+    if (!customer) {
+      return res.status(201).json({ msg: "Customer not found" });
+    }
+
+    // Create an update object with only provided fields
+    const updates = {};
+    if (firstName && firstName != customer.firstName)
+      updates.firstName = firstName;
+    if (lastName && lastName != customer.lastName) updates.lastName = lastName;
+    if (password) {
+      const isSamePassword = await bcrypt.compare(password, customer.password);
+      if (isSamePassword) {
+        return res.status(201).json({
+          msg: "The new password cannot be the same as the old password",
+        });
+      }
+
+      const salt = await bcrypt.genSalt();
+      updates.password = await bcrypt.hash(password, salt);
+    }
+
+    // Perform update and handle potential duplicate key error
+    const updatedCustomer = await Customer.findByIdAndUpdate(
+      customerId,
+      updates,
+      { new: true, runValidators: true } // Return the updated document
+    );
+
+    if (!updatedCustomer) {
+      // Handle potential duplicate key error (unique email constraint)
+      return res.status(201).json({ msg: "Update failed: duplicate email" });
+    }
+
+    res.status(200).json({
+      msg: "Customer updated successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error updating customer" });
+  }
+}
 
 // export const getCustomerReviews = async(req, res)=>{
 //     try{

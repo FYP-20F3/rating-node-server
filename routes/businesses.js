@@ -5,8 +5,7 @@ import {
   toggleBlockBusiness,
   deleteBusiness,
   getAllBusinesses,
-  // getBusinessesByCategory,
-  // getBusinessesByLocation,
+  editBusinessInfo,
 } from "../controllers/businesses.js";
 import { verifyToken } from "../middleware/auth.js";
 
@@ -18,7 +17,6 @@ router.get("/", getAllBusinesses);
 router.get("/:businessId", getBusinessInfoById);
 router.put("/:businessId/block", toggleBlockBusiness);
 router.delete("/:businessId", deleteBusiness);
-// router.get("/category/:categoryName", getBusinessesByCategory);
-// router.get("/:location", getBusinessesByLocation);
+router.post("/edit/:businessId", editBusinessInfo);
 
 export default router;
